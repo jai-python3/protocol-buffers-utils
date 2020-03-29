@@ -47,7 +47,7 @@ def write_proto_file(outfile):
     """Write the protocol buffer message definitions to the output file
     """
     with open(outfile, "w") as f:
-        f.write("syntax = \"proto3\"\n\n")
+        f.write("syntax = \"proto3\";\n\n")
 
 
         for count, message in enumerate(g_lookup, start=1):
@@ -57,8 +57,8 @@ def write_proto_file(outfile):
             for position, field_name in enumerate(g_lookup[message]):
                 position += 1
                 datatype = g_lookup[message][field_name]
-                field_list.append("  {} {} = {};".format(datatype, field_name, position))
-            f.write(",\n".join(field_list))
+                field_list.append("  {} {} = {}".format(datatype, field_name, position))
+            f.write(";\n".join(field_list))
             f.write("\n}\n\n")
     
     print("\nWrote '{}'".format(outfile))
