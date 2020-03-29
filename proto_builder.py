@@ -1,10 +1,7 @@
-import subprocess
-import csv
 import os
 import sys
 import click
 import pathlib
-import json
 import logging
 import calendar
 import time
@@ -44,7 +41,6 @@ def display_messages():
             position += 1
             datatype = g_lookup[message][field_name]
             print("  {} {} = {};".format(datatype, field_name, position))
-
 
 
 def write_proto_file(outfile):
@@ -138,7 +134,6 @@ def prompt_for_field_details(msg_name, field_num):
         field_num += 1
         prompt_for_field_details(msg_name, field_num)
     
-
 
 @click.command()
 @click.option('--outdir', help='The output directory, default is /tmp/proto_builder.py/[timestamp]')
