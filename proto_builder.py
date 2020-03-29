@@ -55,8 +55,15 @@ def prompt_for_message_details(msg_num):
         msg_name = input("What is the message name? ")
 
     msg_name = msg_name.strip()
+
+    if not msg_name[0].isupper():
+        msg_name = msg_name.capitalize()
+
     if not msg_name.endswith('Message'):
         msg_name += 'Message'
+
+        
+
 
     print("\nWhat are the fields for message '{}'?".format(msg_name))
     prompt_for_field_details(msg_name, 1)
