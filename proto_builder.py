@@ -46,6 +46,28 @@ def display_messages():
             print("  {} {} = {};".format(datatype, field_name, position))
 
 
+
+def write_proto_file(outfile):
+    """Write the protocol buffer message definitions to the output file
+    """
+    with open(outfile, "w") as f:
+        f.write("syntax = \"proto3\"\n\n")
+
+
+        for count, message in enumerate(g_lookup, start=1):
+            logging.info("Writing definition for message '{}'".format(message))
+            f.write("message {} {{\n".format(message))
+            field_list = []
+            for position, field_name in enumerate(g_lookup[message]):
+                position += 1
+                datatype = g_lookup[message][field_name]
+                field_list.append("  {} {} = {};".format(datatype, field_name, position))
+            f.write(",\n".join(field_list))
+            f.write("\n}\n\n")
+    
+    print("\nWrote '{}'".format(outfile))
+
+
 def prompt_for_message_details(msg_num):
     """Prompt the user for the details for this protocol buffers message
     """    
@@ -61,9 +83,6 @@ def prompt_for_message_details(msg_num):
 
     if not msg_name.endswith('Message'):
         msg_name += 'Message'
-
-        
-
 
     print("\nWhat are the fields for message '{}'?".format(msg_name))
     prompt_for_field_details(msg_name, 1)
@@ -122,9 +141,10 @@ def prompt_for_field_details(msg_name, field_num):
 
 
 @click.command()
-@click.option('--outdir', help='The default is the current working directory')
-@click.option('--logfile', help="The log file")
-def main(outdir, logfile):
+@click.option('--outdir', help='The output directory, default is /tmp/proto_builder.py/[timestamp]')
+@click.option('--outfile', help='The output file, default is [outdir]/proto_builder.py.proto')
+@click.option('--logfile', help="The log file, default is [outdir]/proto_builder.py.log")
+def main(outdir, outfile, logfile):
     """Script for building protocol buffer proto3 files
     """
 
@@ -149,10 +169,19 @@ def main(outdir, logfile):
 
     assert isinstance(logfile, str)
 
+    if outfile is None:
+        outfile = outdir + '/' + os.path.basename(__file__) + '.proto'
+        print(Fore.YELLOW + "--outfile was not specified and therefore was set to '{}'".format(outfile))
+        print(Style.RESET_ALL + '', end='')
+
+    assert isinstance(outfile, str)
+ 
+ 
     logging.basicConfig(filename=logfile, format=LOGGING_FORMAT, level=LOG_LEVEL)
 
     prompt_for_message_details(1)
     display_messages()
+    write_proto_file(outfile)
     display_reminders()
 
 
